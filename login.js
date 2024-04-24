@@ -12,7 +12,7 @@ async function login() {
         body: JSON.stringify(customer)
       };
       try {
-        let response = await fetch(getHost() + "/signin", request);
+        let response = await fetch("https://lab10-latest-2e31.onrender.com" + "/signin", request);
         if(response.status == 200) {  
             alert("The login was successful!");
             const token = await response.text();
