@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="navbar.css">
-    <title>Search ducks</title>   
+    <link rel="stylesheet" href="navbar.css" />
+    <title>Search ducks</title>
   </head>
   <body>
     <ul class="topnav">
       <li><a class="active" href="index.html">Home</a></li>
-      <li><a href="add.html">Add ducks</a></li>        
+      <li><a href="add.html">Add ducks</a></li>
       <li><a href="search.html">Search ducks</a></li>
       <li><a href="pond.html">Pond</a></li>
-      <li class="right"><a  href="login.html">Login</a></li>
+      <li class="right"><a href="login.html">Login</a></li>
     </ul>
     <labe>Type:</labe>
     <input id="type" />
@@ -27,14 +27,21 @@
       </thead>
       <tbody id="result"></tbody>
     </table>
-
+    <script src="configuration.js"></script>
     <script>
       let ducks = [];
 
       async function getAll() {
-        let host = "https://lab10-latest-2e31.onrender.com";
-        return fetch(host + "/ducks")
-          .then((response) => response.json())
+        let host = getHost();
+        const headers = { Authorization: `Bearer ${configuration.token()}` };
+        console.log(headers);
+        return fetch(host + "/ducks", { headers })
+          .then((response) => {
+            if (response.status == 401) {
+              logout();
+            }
+            return response.json();
+          })
           .catch((error) => {
             console.log(error);
             alert("Something went wrong!");

@@ -17,14 +17,18 @@
     </ul>
 
     <div id="pond"></div>
-
+    <script src="configuration.js"></script>
     <script>
-      let host = "https://lab10-latest-2e31.onrender.com";
+      let host = getHost();
       let ducks = [];
       displayTheDucks();
 
       async function getAll() {
-        let response = await fetch(host + "/ducks");
+        const headers = { Authorization: `Bearer ${configuration.token()}` };
+        let response = await fetch(host + "/ducks", { headers });
+        if (response.status == 401) {
+          logout();
+        }
         let result = await response.json();
         return result;
       }
@@ -42,21 +46,42 @@
           div.className = "flip-card";
           let innerHtml = `
             <div class="flip-card-inner">
-              <div class="flip-card-front">
-               <img
-                   src="${host}/ducks/${duck.id}/image"
-                   alt="Duck"
-                   style="width: 100%"
-                />
-              </div>
-              <div class="flip-card-back">
-                <h1>${duck.name}</h1>
-                <p>${duck.type}</p>
-               </div>
+                <div class="flip-card-front">
+                    <img
+                        src=""
+                        alt="Duck"
+                        style="width: 100%"
+                        id="duck-image-${duck.id}"
+                    />
+                </div>
+                <div class="flip-card-back">
+                    <h1>${duck.name}</h1>
+                    <p>${duck.type}</p>
+                </div>
             </div>
-            `;
+        `;
           div.innerHTML = innerHtml;
           pond.appendChild(div);
+
+          // Fetch image separately with authorization headers
+          let imgElement = document.getElementById(`duck-image-${duck.id}`);
+          fetch(`${host}/ducks/${duck.id}/image`, {
+            headers: { Authorization: `Bearer ${configuration.token()}` },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.blob();
+            })
+            .then((blob) => {
+              let imageUrl = URL.createObjectURL(blob);
+              imgElement.src = imageUrl;
+            })
+            .catch((error) => {
+              console.error("There was a problem fetching the image:", error);
+              // You can provide a fallback image here if needed
+            });
         }
       }
     </script>

@@ -1,32 +1,32 @@
+async function login() {
+  let username = document.getElementById("username").value;
+  let password = document.getElementById("password").value;
 
+  let customer = { username: username, password: password };
+  let request = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(customer),
+  };
+  try {
+    let response = await fetch(getHost() + "/signin", request);
+    if (response.status == 200) {
+      alert("The login was successful!");
+      const token = await response.text();
+      saveTheToken(token);
+      location.href = "index.html";
+    } else {
+      location.href = "index.html";
 
-async function login() {    
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
-    let customer = {username: username, password: password}
-    let request = {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(customer)
-      };
-      try {
-        let response = await fetch("https://lab10-latest-2e31.onrender.com" + "/signin", request);
-        if(response.status == 200) {  
-            alert("The login was successful!");
-            const token = await response.text();
-            configuration.token = token;
-            configuration.loggedIn = true;
-            location.href = "index.html";
-
-        } else {
-            console.log(`response status:${response.status}`);            
-            alert("Something went wrong!");
-        }
-      }
-      catch(error) {
-        console.log(error);        
-        alert("Something went wrong!");
-      }    
+      console.log("response status: ${response.status}");
+      removeTheToken();
+      alert("Something went wrong!");
+    }
+  } catch (error) {
+    console.log(error);
+    removeTheToken();
+    alert("Something went wrong!");
+  }
 }
